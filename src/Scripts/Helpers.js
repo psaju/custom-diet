@@ -1,5 +1,8 @@
 //import axios from "axios";
 
+const monthNames = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
+const dayNames = ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'];
+
 export function appendScripts() {
   const menuIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13];
   menuIds.forEach(element => {
@@ -193,6 +196,40 @@ export function getOrderData(data) {
   return response;
 }
 
-export function splitString(){
-  
+export function getStringObject(string) {
+  let dateArray = string.split(': ')[1].match(/\d{4}-\d{2}-\d{2}[, ]/gm).map(x => x.replace(',', '').replace(' ', ''));
+  let replacementsArray = string.split(': ')[2].match(/\d(?<=\d)(.*?)(?=\))[)]/gm)
+  return [dateArray, replacementsArray];
+}
+
+export function getDateObject(dateString) {
+  const date = new Date(dateString);
+  let dayName, monthName, day;
+
+  day = date.getDate();
+  dayName = dayNames[date.getDay()];
+  monthName = monthNames[parseInt(dateString.split('-')[1]) - 1];
+
+  return { day: day, dayName: dayName, monthName: monthName }
+}
+
+export function getMeals(activeMealsArray) {
+  let arr = [];
+  activeMealsArray.forEach(element => {
+    let date = element.match(/\d{4}-\d{2}-\d{2}/gm)[0];
+    let dietCode = element.match(/(?<=#)(.*?)(?=\()/gm)[0];
+    let mealCodes = element.match(/(?<=[(])(.*?)(?=\))/gm)[0].split(',');
+
+    mealCodes.forEach(code => {
+      arr.push({
+        'date': date,
+        'mealCode': code,
+        'dietCode': dietCode,
+      })
+    })
+  });
+
+  arr.sort((a,b) => a.mealCode.localeCompare(b.mealCode));
+
+  return arr;
 }
