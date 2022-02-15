@@ -1,10 +1,16 @@
 import './App.css';
 import { useEffect, useState } from 'react';
+import React from 'react'
 import { appendScripts, getOrderData } from './Scripts/Helpers';
 import Meallist from './Components/Meallist';
 import MealButtons from './Components/MealButtons'
 
+
+export const AppContext = React.createContext();
+
 function App() {
+
+  
 
   const [menu, setMenu] = useState([]);
   const [orderData, setOrderData] = useState(null);
@@ -37,16 +43,18 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <MealButtons key={'mealbuttons'} orderData={orderData} togglePopup={togglePopup} />
-      {
-        popupVisibility?
-          <Meallist togglePopup={togglePopup} orderData={orderData.data.productsResults[activeBasketPosition]} activeBasketPosition={activeBasketPosition} menu={menu} />
-        :
-          null
-      }
-    </div>
+      <div className="App">
+        <MealButtons key={'mealbuttons'} orderData={orderData} togglePopup={togglePopup} />
+        {
+          popupVisibility?
+            <Meallist togglePopup={togglePopup} orderData={orderData.data.productsResults[activeBasketPosition]} activeBasketPosition={activeBasketPosition} menu={menu} />
+          :
+            null
+        }
+      </div>
   );
+
+  
 }
 
 export default App;

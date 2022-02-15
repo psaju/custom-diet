@@ -9,10 +9,11 @@ function MealCalendar(props) {
   }, [])
 
   function toggleDate(elem) {
+    getMeals(props.replacements.filter(x => x.indexOf(elem) === 0)).then(response => {
+      props.setActiveReplacements([...response]);
+    });
     props.setActiveDate(elem);
-    props.setActiveReplacements([...getMeals(props.replacements.filter(x => x.indexOf(elem) === 0))]);
-
-    console.log(props.activeReplacements);
+    
   }
 
   return (
