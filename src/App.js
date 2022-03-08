@@ -16,6 +16,8 @@ function App() {
   const [orderData, setOrderData] = useState(null);
   const [popupVisibility, setPopupVisibility] = useState(false)
   const [activeBasketPosition, setActiveBasketPosition] = useState(null)
+  const [activeSystemId, setActiveSystemId] = useState(null)
+  const [activeCalorieCode, setActiveCalorieCode] = useState(null)
 
   useEffect(() => {
 
@@ -37,9 +39,11 @@ function App() {
 
   }, []);
 
-  function togglePopup(basketPosition) {
+  function togglePopup(basketPosition, systemId, calorieCode) {
     setPopupVisibility(!popupVisibility);
     setActiveBasketPosition(basketPosition);
+    setActiveSystemId(systemId);
+    setActiveCalorieCode(calorieCode);
   }
 
   return (
@@ -47,7 +51,7 @@ function App() {
         <MealButtons key={'mealbuttons'} orderData={orderData} togglePopup={togglePopup} />
         {
           popupVisibility?
-            <Meallist togglePopup={togglePopup} orderData={orderData.data.productsResults[activeBasketPosition]} activeBasketPosition={activeBasketPosition} menu={menu} />
+            <Meallist togglePopup={togglePopup} orderData={orderData.data.productsResults[activeBasketPosition]} activeBasketPosition={activeBasketPosition} menu={menu} activeSystemId={activeSystemId} activeCalorieCode={activeCalorieCode}/>
           :
             null
         }

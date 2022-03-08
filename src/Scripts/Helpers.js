@@ -117,6 +117,41 @@ const allergens = {
   }
 }
 
+const allowedReplacements = {
+  // dieta plus
+  662: [1, 2, 5, 6],
+
+  // dieta premium
+  663: {
+    'S': [
+      { 'target_calories': 1200, 'menu_id': [1, 2, 3] },
+      { 'target_calories': 1500, 'menu_id': [8, 10] }
+    ],
+
+  'M': [
+    { 'target_calories': 1800, 'menu_id': [1, 2, 3, 5, 4, 6, 7, 13] },
+    { 'target_calories': 2000, 'menu_id': [8, 10] }
+  ],
+
+  'L': [
+    { 'target_calories': 2200, 'menu_id': [2, 3, 5, 4, 6, 7, 13] },
+    { 'target_calories': 2500, 'menu_id': [8, 10] }
+  ],
+
+  'XL': [
+    { 'target_calories': 2800, 'menu_id': [2, 3, 5, 4, 6, 7, 13] },
+    { 'target_calories': 3000, 'menu_id': [8, 10] }
+  ]
+},
+
+set: [1,2,3,4,5,6,7,8,9,10,11,13]
+};
+
+const allowedMeals = {
+  4: [3],
+  7: [2,3,4,5]
+};
+
 
 export function appendScripts() {
   const menuIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13];
@@ -294,7 +329,9 @@ export function getSingleMeal(menu, obj) {
 
 export function getSingleAllergens(mealObj) {
   let tempArray = [];
-  let allergensTempArray = mealObj.composition.items.map(item => item.allergens);
+  let allergensTempArray = mealObj?.composition?.items?.map(item => item.allergens);
+
+  if (typeof allergensTempArray === 'undefined') return null;
   
   allergensTempArray.forEach(element => { tempArray = [...tempArray, ...element.map(a => a.name)] });
   
@@ -307,4 +344,61 @@ export function getSingleAllergens(mealObj) {
 
 export function translateAllergens(arr){
   return arr.map(a => allergens[a].name.pol)
+}
+
+export function getReplacementMeals (mealId, dateString, menu, activeSystemId, activeCaloriesCode) {
+  const meals = [];
+  let code;
+
+  for (const d in menu) {
+
+    code = d;
+    
+    if (typeof allowedReplacements[activeSystemId][activeCaloriesCode] != 'undefined') {
+  
+      for (let i = 0; i < allowedReplacements[activeSystemId][activeCaloriesCode].length; i++) {
+  
+        const element = allowedReplacements[activeSystemId][activeCaloriesCode][i];
+        const idArray = element.menu_id;
+        const calories = element.target_calories;
+  
+        for (let j = 0; j < idArray.length; j++) {
+  
+          const menuId = idArray[j];
+          let menus = menu[menuId].filter(x => x.attributes.target_calories == calories);
+
+          if(menus.length){
+            if(typeof allowedMeals[menuId] != 'undefined' && allowedMeals[menuId]?.includes(mealId)){
+              meals.push([menuId, menus[0].schedules[dateString].meals.filter(x => x.meal.id == mealId)[0], calories]);
+            } else if (typeof allowedMeals[menuId] === 'undefined'){
+              meals.push([menuId, menus[0].schedules[dateString].meals.filter(x => x.meal.id == mealId)[0], calories]);
+            }     
+          }        
+        }
+  
+      }
+  
+    } else {
+      for (let i = 0; i < allowedReplacements[activeSystemId].length; i++) {
+  
+        const element = allowedReplacements[activeSystemId][i];
+        const calories = activeSystemId == 662 ?
+        activeCaloriesCode :
+        allowedReplacements[activeSystemId][activeCaloriesCode].filter(x => x.menu_id.includes(allowedReplacements[activeSystemId][activeCaloriesCode][0].menu_id[0]))[0].target_calories
+
+  
+  
+          const menuId = element;
+          let menus = menu[menuId].filter(x => x.attributes.target_calories == calories);
+
+          if(menus.length){
+            meals.push([menuId, menus[0].schedules[dateString].meals.filter(x => x.meal.id == mealId)[0], calories]);
+          }        
+    }
+  }
+  
+    return meals;
+  
+  }
+  
 }

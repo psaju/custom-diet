@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getStringObject, getSingleMeal, getSingleAllergens } from '../Scripts/Helpers'
 import MealCalendar from "./MealCalendar";
+import MealReplacements from "./MealReplacements";
 
 function Meallist(props) {
 
@@ -29,7 +30,7 @@ function Meallist(props) {
 
   return (
     <>
-    <MealCalendar dates={dates} activeDate={activeDate} setActiveDate={setActiveDate} setActiveReplacements={setActiveReplacements} replacements={replacements} activeReplacements={activeReplacements}/>
+    <MealCalendar dates={dates} activeDate={activeDate} setActiveDate={setActiveDate} setActiveReplacements={setActiveReplacements} replacements={replacements} activeReplacements={activeReplacements} menu={props.menu}/>
     <div id="meal-list">
       {activeReplacements.map((item, i) => {
         const mealObj = getSingleMeal(props.menu, item);
@@ -69,9 +70,13 @@ function Meallist(props) {
 
               {allergensArray.length ? 
                 <div className="meal-content-alergens">
-                  <span className="green">Alergeny</span>
+                  <span className="green">Alergeny:</span>
                   {allergensArray.join(", ")}
-                </div> : ''
+                </div> : 
+                <div className="meal-content-alergens">
+                  <span className="green">Alergeny:</span>
+                  brak
+                </div>
               }
 
             </div>
@@ -84,6 +89,10 @@ function Meallist(props) {
         )}
       )}
     </div>
+
+    {showReplacements === true ? 
+      <MealReplacements mealobj={activeMeal} date={activeDate} menu={props.menu} activeSystemId={props.activeSystemId} activeCalorieCode={props.activeCalorieCode}/> : ''
+    }
     </>
   );
 }

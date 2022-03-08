@@ -4,7 +4,7 @@ function MealButtons(props) {
     <div id="meal-buttons">
       {props.orderData?.data?.productsResults?.map((item, i) => {
         return (
-            <button key={item.basketPosition} onClick={() => props.togglePopup(item.basketPosition)} basketposition={item.basketPosition}>{item.productName}</button>
+            <button key={item.basketPosition} onClick={() => props.togglePopup(item.basketPosition, item.productId, item.productCode)} basketposition={item.basketPosition}>{item.productName}</button>
         )
       })}
     </div>
